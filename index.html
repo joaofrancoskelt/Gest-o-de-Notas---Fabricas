@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Controle de Sistemas</title>
   <link rel="icon" type="image/png" href="https://www.melhorcomprar.com.br/images/lojas/cupom-desconto-skelt.webp">
-  
+   
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -274,14 +274,15 @@
     /* === CONFIGURAÇÕES GERAIS === */
     const dataAppURL = "https://script.google.com/macros/s/AKfycbyRxnJrySs3VfLItnP3Iazhnm5yorMdRpjPsd1W2am13fg42gmLXW0NqxJhO1aULdSOSg/exec";
     
-    // Lista local de Fábricas para associar ao login
+    // Lista de Fábricas (PAINEL INTERNO)
+    // OBS: O usuário "INTEGRANFE" foi removido daqui pois ele será tratado como redirecionamento
     const ACESSOS_LOCAIS = {
-     'una':       { fabrica: 'UNA' },
-        'icnb':      { fabrica: 'ICNB' },
-        'naturelle': { fabrica: 'NATURELLE' },
-        'aercamp':   { fabrica: 'AERCAMP' },
-        'decor':     { fabrica: 'DECOR' },
-        'mundial':   { fabrica: 'MUNDIAL' }, // <--- LINHA ADICIONAD
+        'una':        { fabrica: 'UNA' },
+        'icnb':       { fabrica: 'ICNB' },
+        'naturelle':  { fabrica: 'NATURELLE' },
+        'aercamp':    { fabrica: 'AERCAMP' },
+        'decor':      { fabrica: 'DECOR' },
+        'mundial':    { fabrica: 'MUNDIAL' }
     };
 
     let sessaoAtual = null;
@@ -313,8 +314,6 @@
     });
 
     /* === LÓGICA DE LOGIN HÍBRIDA === */
-    // 1. Usa o visual e o endpoint do Código A para validar senha.
-    // 2. Se validado, usa o mapeamento do Código B para definir a fábrica e abrir o Dashboard.
     function login() {
       const user = document.getElementById('username').value.trim();
       const pass = document.getElementById('password').value.trim();
@@ -330,28 +329,43 @@
       fetch(`https://script.google.com/macros/s/AKfycbwVlslb9UQbiYqpbI4Senjt3Ko_thR84eVWQgmMP3Kayn04jK3PITEcIyWlgiWHXo60/exec?user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`)
         .then(response => response.text())
         .then(url => {
-          btn.querySelector('.btn-text').style.display = 'inline-block';
-          btn.querySelector('.btn-loader').style.display = 'none';
-          url = url.trim();
+          url = url.trim(); // A URL que vem da Coluna C (ex: https://integra-nfe-sistema-completo.netlify.app)
 
           // Se a API retornar qualquer coisa diferente de INVALID, a senha está certa.
           if (url && url !== "INVALID") {
-             // Login Visual Aprovado. Agora verificamos o contexto da fábrica.
-             const userKey = user.toLowerCase();
-             let fabricaDestino = 'TODAS'; // Padrão se não achar no mapeamento
+              const userKey = user.toLowerCase();
+              
+              // === CASO ESPECIAL: INTEGRANFE ===
+              // Se for o usuário integranfe, redireciona para o link da planilha (Coluna C)
+              if (userKey === 'integranfe') {
+                  mostrarFeedback('Redirecionando...');
+                  setTimeout(() => {
+                      window.location.href = url; // Redireciona para o Netlify
+                  }, 1000);
+                  return; // Para a execução aqui
+              }
 
-             if (ACESSOS_LOCAIS[userKey]) {
-                fabricaDestino = ACESSOS_LOCAIS[userKey].fabrica;
-             } else {
-                console.warn("Usuário logado mas sem mapeamento de fábrica. Definindo como TODAS ou avisar erro.");
-             }
+              // === CASO PADRÃO: FÁBRICAS (PAINEL INTERNO) ===
+              // Só entra se estiver na lista ACESSOS_LOCAIS
+              if (ACESSOS_LOCAIS[userKey]) {
+                 const fabricaDestino = ACESSOS_LOCAIS[userKey].fabrica;
+                 
+                 btn.querySelector('.btn-text').style.display = 'inline-block';
+                 btn.querySelector('.btn-loader').style.display = 'none';
 
-             // Iniciar Sessão
-             iniciarSessao(userKey, fabricaDestino);
+                 iniciarSessao(userKey, fabricaDestino);
+              } else {
+                 // Usuário existe na API, mas não é Fábrica e nem o Integranfe
+                 btn.querySelector('.btn-text').style.display = 'inline-block';
+                 btn.querySelector('.btn-loader').style.display = 'none';
+                 errorMsg.textContent = "Acesso negado: Usuário sem permissão local.";
+                 document.getElementById('password').value = '';
+              }
 
           } else {
+            btn.querySelector('.btn-text').style.display = 'inline-block';
+            btn.querySelector('.btn-loader').style.display = 'none';
             errorMsg.textContent = "Usuário ou senha incorretos!";
-            // Resetar campo senha
             document.getElementById('password').value = '';
           }
         })
@@ -397,7 +411,7 @@
         document.getElementById('login-wrapper').style.display = 'flex';
     }
 
-    /* === LÓGICA DO DASHBOARD (Preservada do Código B) === */
+    /* === LÓGICA DO DASHBOARD === */
     function initTheme() {
         const saved = localStorage.getItem('theme');
         if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -417,17 +431,15 @@
     async function carregarNFs() {
         if(!sessaoAtual) return;
         const tbody = document.querySelector('#nfTable tbody');
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-12"><div class="flex justify-center flex-col items-center"><i class="fas fa-spinner fa-spin text-indigo-500 text-3xl mb-3"></i><span class="text-slate-400">Buscando dados da '+ sessaoAtual.fabrica +'...</span></div></td></tr>';
+        
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-12"><div class="flex justify-center flex-col items-center"><i class="fas fa-spinner fa-spin text-indigo-500 text-3xl mb-3"></i><span class="text-slate-400">Buscando dados de '+ sessaoAtual.fabrica +'...</span></div></td></tr>';
         
         try {
             const res = await fetch(dataAppURL + '?action=get');
             const rawData = await res.json();
             
-            if (sessaoAtual.fabrica === 'TODAS') {
-                allData = rawData;
-            } else {
-                allData = rawData.filter(x => x.fabrica === sessaoAtual.fabrica);
-            }
+            // Filtro estrito por Fábrica (pois "TODAS" foi removido)
+            allData = rawData.filter(x => x.fabrica === sessaoAtual.fabrica);
             
             allData.sort((a,b) => new Date(b.dataHora||0) - new Date(a.dataHora||0));
             aplicarFiltroPesquisa();
@@ -486,9 +498,9 @@
                 const prop = i === 1 ? 'pdfRetorno' : `pdfRetorno${i}`;
                 const link = r[prop];
                 if(link) {
-                     htmlRetorno += `<a href="${link}" target="_blank" class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800 transition flex items-center justify-center font-bold text-xs" title="Ver Retorno ${i}"><i class="fas fa-check"></i><span class="ml-0.5 text-[10px]">${i}</span></a>`;
+                      htmlRetorno += `<a href="${link}" target="_blank" class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800 transition flex items-center justify-center font-bold text-xs" title="Ver Retorno ${i}"><i class="fas fa-check"></i><span class="ml-0.5 text-[10px]">${i}</span></a>`;
                 } else {
-                     htmlRetorno += `<label class="cursor-pointer w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/50 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-300 border border-slate-200 dark:border-slate-600 transition flex items-center justify-center group" title="Enviar Retorno ${i}"><i class="fas fa-cloud-upload-alt group-hover:scale-110 transition-transform"></i><input type="file" class="hidden" accept="application/pdf" onchange="enviarPdfRetorno('${r.id}', this, ${i})"></label>`;
+                      htmlRetorno += `<label class="cursor-pointer w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/50 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-300 border border-slate-200 dark:border-slate-600 transition flex items-center justify-center group" title="Enviar Retorno ${i}"><i class="fas fa-cloud-upload-alt group-hover:scale-110 transition-transform"></i><input type="file" class="hidden" accept="application/pdf" onchange="enviarPdfRetorno('${r.id}', this, ${i})"></label>`;
                 }
             }
             htmlRetorno += '</div>';
