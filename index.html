@@ -1,494 +1,554 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="light">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Notas - Fabricas</title>
-    <link rel="icon" type="image/png" href="https://www.melhorcomprar.com.br/images/lojas/cupom-desconto-skelt.webp">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Controle de Sistemas</title>
+  <link rel="icon" type="image/png" href="https://www.melhorcomprar.com.br/images/lojas/cupom-desconto-skelt.webp">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: { primary: '#4f46e5', secondary: '#0f172a' }
-                }
-            }
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: { primary: '#4f46e5', secondary: '#0f172a' }
         }
-    </script>
+      }
+    }
+  </script>
 
-    <style>
-        /* Estilos Personalizados */
-        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .dark ::-webkit-scrollbar-thumb { background: #475569; }
-        
-        .custom-table { border-collapse: separate; border-spacing: 0 8px; }
-        .custom-table thead tr th { border-bottom: none; color: #64748b; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding-left: 1rem; }
-        .custom-table tbody tr { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: transform 0.2s, box-shadow 0.2s; }
-        .custom-table tbody tr:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); z-index: 10; position: relative; }
-        .custom-table td:first-child { border-top-left-radius: 0.75rem; border-bottom-left-radius: 0.75rem; }
-        .custom-table td:last-child { border-top-right-radius: 0.75rem; border-bottom-right-radius: 0.75rem; }
-        .dark .custom-table tbody tr { background: #1e293b; box-shadow: none; }
-        .dark .custom-table tbody tr:hover { background: #334155; }
+  <style>
+    /* Estilos globais apenas para o wrapper de login */
+    #login-wrapper {
+      --primary: #003c8f;
+      --accent: #0277bd;
+      --bg: #f5f7fa;
+      --card: #fff;
+      --text: #333;
+      --footer-bg: #e0e3ea;
+      --footer-text: #003c8f;
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 9999;
+    }
 
-        .modern-input { width: 100%; padding: 0.6rem 1rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; background: #fff; font-size: 0.9rem; transition: all 0.2s; }
-        .modern-input:focus { outline: none; border-color: #6366f1; ring: 2px solid rgba(99, 102, 241, 0.1); }
-        .dark .modern-input { background: #1e293b; border-color: #334155; color: #f8fafc; }
-        
-        .cursor-wait { cursor: wait; }
+    /* Banner */
+    #login-wrapper .banner-carousel { position: relative; width: 100%; height: 250px; overflow: hidden; border-bottom: 3px solid var(--primary); border-radius: 0 0 15px 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    #login-wrapper .banner-carousel img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 1s ease-in-out; }
+    #login-wrapper .banner-carousel img.active { opacity: 1; }
 
-        /* Animação de entrada */
-        .fade-in { animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+    /* Login Box */
+    #login-wrapper .login-box {
+      background: var(--card);
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      margin-top: 40px;
+      width: 320px;
+      text-align: center;
+      animation: fadeInUp 1.5s ease;
+      position: relative;
+      z-index: 1;
+    }
+    #login-wrapper .login-box h2 { color: var(--primary); margin-bottom: 25px; font-size: 1.8em; font-weight: bold; }
+    #login-wrapper .login-box input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #ccc; font-size: 1em; color: #333; }
+    
+    #login-wrapper .login-box button {
+      width: 100%; padding: 12px; background: var(--accent); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 1.1em; font-weight: bold;
+      box-shadow: 0 0 15px rgba(2,119,189,0.6); transition: all 0.3s ease; animation: pulseGlow 2s infinite;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #login-wrapper .login-box button:hover { background: var(--primary); box-shadow: 0 0 25px rgba(3,155,229,0.9); transform: scale(1.05); }
+    #login-wrapper .error { color: red; margin-top: 10px; font-size: 0.9em; }
+
+    /* Loader */
+    .btn-loader { display: flex; justify-content: center; align-items: flex-end; gap: 4px; }
+    .btn-loader span { width: 6px; height: 6px; background: #fff; border-radius: 50%; display: inline-block; animation: bounce 0.6s infinite alternate; }
+    .btn-loader span:nth-child(2) { animation-delay: 0.1s; }
+    .btn-loader span:nth-child(3) { animation-delay: 0.2s; }
+    @keyframes bounce { 0% { transform: translateY(0); } 100% { transform: translateY(-6px); } }
+
+    /* Senha com olho */
+    .password-container { position: relative; }
+    .password-container svg { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; cursor: pointer; fill: #555; transition: transform 0.3s ease; }
+    .password-container svg.open { transform: translateY(-50%) rotate(0deg); }
+    .password-container svg.closed { transform: translateY(-50%) rotate(180deg); }
+
+    /* Footer do Login */
+    #login-footer { margin-top: auto; padding: 15px; background: var(--footer-bg); width: 100%; color: var(--footer-text); text-align: center; font-size: 14px; border-top: 1px solid #ccc; }
+
+    /* Animações e Canvas */
+    @keyframes pulseGlow { 0%{box-shadow:0 0 10px rgba(3,155,229,0.3)} 50%{box-shadow:0 0 25px rgba(3,155,229,0.8)} 100%{box-shadow:0 0 10px rgba(3,155,229,0.3)} }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+    #bgCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+    
+    @media(max-width:768px) { #login-wrapper .banner-carousel { height: 180px; } #login-wrapper .login-box { width: 90%; padding: 30px; } }
+
+    /* ESTILOS DO DASHBOARD (Ajustes finos para Tailwind) */
+    .custom-table { border-collapse: separate; border-spacing: 0 8px; }
+    .custom-table thead tr th { border-bottom: none; color: #64748b; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding-left: 1rem; }
+    .custom-table tbody tr { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: transform 0.2s, box-shadow 0.2s; }
+    .custom-table tbody tr:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); z-index: 10; position: relative; }
+    .custom-table td:first-child { border-top-left-radius: 0.75rem; border-bottom-left-radius: 0.75rem; }
+    .custom-table td:last-child { border-top-right-radius: 0.75rem; border-bottom-right-radius: 0.75rem; }
+    .dark .custom-table tbody tr { background: #1e293b; box-shadow: none; }
+    .dark .custom-table tbody tr:hover { background: #334155; }
+    .modern-input { width: 100%; padding: 0.6rem 1rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; background: #fff; font-size: 0.9rem; transition: all 0.2s; }
+    .modern-input:focus { outline: none; border-color: #6366f1; ring: 2px solid rgba(99, 102, 241, 0.1); }
+    .dark .modern-input { background: #1e293b; border-color: #334155; color: #f8fafc; }
+    .cursor-wait { cursor: wait; }
+    .fade-in { animation: fadeIn 0.5s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
 </head>
+
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 h-screen overflow-hidden">
 
-    <div id="loginScreen" class="fixed inset-0 z-50 bg-slate-100 dark:bg-slate-900 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-8 border border-slate-200 dark:border-slate-700 fade-in">
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 mx-auto rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg mb-4">
-                    <i class="fas fa-industry text-2xl"></i>
-                </div>
-                <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Portal do Fornecedor</h1>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Faça login para acessar suas notas</p>
-            </div>
+  <div id="login-wrapper">
+    <canvas id="bgCanvas"></canvas>
 
-            <form onsubmit="realizarLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Usuário / Fábrica</label>
-                    <div class="relative">
-                        <input type="text" id="loginUser" class="modern-input pl-10" placeholder="nome Fab" required>
-                        <i class="fas fa-user absolute left-3 top-3 text-slate-400"></i>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Senha</label>
-                    <div class="relative">
-                        <input type="password" id="loginPass" class="modern-input pl-10" placeholder="••••••" required>
-                        <i class="fas fa-lock absolute left-3 top-3 text-slate-400"></i>
-                    </div>
-                </div>
-                
-                <div id="loginError" class="hidden text-red-500 text-xs font-bold text-center bg-red-50 dark:bg-red-900/20 p-2 rounded">
-                    Usuário ou senha incorretos.
-                </div>
-
-                <button type="submit" class="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 transition transform hover:scale-[1.02]">
-                    Entrar no Sistema
-                </button>
-            </form>
-
-            <div class="mt-6 text-center">
-                <button onclick="toggleDarkMode()" class="text-xs text-slate-400 hover:text-indigo-500 font-medium">
-                    <i class="fas fa-adjust"></i> Alternar Tema
-                </button>
-            </div>
-        </div>
+    <div class="banner-carousel">
+      <img src="https://res.cloudinary.com/beleza-na-web/image/upload/f_auto,fl_progressive,q_auto:best/v1/vitrine/2022_11_29_10_14_40_8/9cf23f62-66b8-47d8-9871-43a216c0b5a2-skelt-banner-rosto.png" class="active">
+      <img src="https://media.fashionnetwork.com/cdn-cgi/image/fit=contain,width=1000,height=1000,format=auto/m/322a/1301/1cb1/e5b4/4963/e53f/8636/6faa/8a9f/15d8/15d8.png">
+      <img src="https://raichu-uploads.s3.amazonaws.com/companypageconfiguration_cc5a4439-560f-4646-8ed9-f8b901c49ba9.jpg">
+      <img src="https://www.vincereincorporadora.com.br/wp-content/uploads/2022/07/no-meio-do-complexo.jpg">
     </div>
 
-    <div id="mainApp" class="hidden flex h-screen overflow-hidden fade-in">
-        
-        <aside class="w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 hidden md:flex flex-col shrink-0 z-20 shadow-xl transition-colors">
-            <div class="p-6 flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg">
-                    <i class="fas fa-building text-lg"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl font-bold text-slate-800 dark:text-white tracking-tight leading-tight" id="sidebarTitle">Fábrica</h1>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Gestão de Retornos</p>
-                </div>
-            </div>
-            
-            <nav class="flex-1 px-4 space-y-2 mt-4">
-                <button class="w-full text-left py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md transition-all flex items-center gap-3 text-sm font-bold">
-                    <i class="fas fa-list"></i> Minhas Notas
-                </button>
-            </nav>
+    <div class="login-box">
+      <h2>Login</h2>
+      <input type="text" id="username" placeholder="Usuário">
 
-            <div class="p-4 border-t border-slate-100 dark:border-slate-700 space-y-2">
-                 <button onclick="realizarLogout()" class="w-full py-2 px-4 rounded-lg border border-red-200 dark:border-red-900/50 text-red-500 dark:text-red-400 text-xs font-bold transition flex items-center justify-center gap-2 hover:bg-red-50 dark:hover:bg-red-900/20">
-                    <i class="fas fa-sign-out-alt"></i> Sair
-                </button>
+      <div class="password-container">
+        <input type="password" id="password" placeholder="Senha">
+        <svg id="togglePassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="closed">
+          <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/>
+          <circle cx="12" cy="12" r="2.5"/>
+        </svg>
+      </div>
 
-                <button onclick="toggleDarkMode()" class="w-full py-2 px-4 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs font-bold transition flex items-center justify-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-600">
-                    <i class="fas fa-moon dark:hidden"></i><i class="fas fa-sun hidden dark:inline text-amber-400"></i> <span id="themeText">Modo Escuro</span>
-                </button>
-            </div>
-        </aside>
-
-        <div class="flex-1 flex flex-col h-screen overflow-hidden relative">
-            
-            <header class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-slate-200/60 dark:border-slate-700 p-6 flex flex-wrap gap-4 items-center justify-between z-10 sticky top-0">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-800 dark:text-white" id="headerTitle">Controle de Notas</h2>
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Gerencie uploads e visualizações</p>
-                </div>
-                <div class="flex gap-2">
-                     <button onclick="carregarNFs()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-bold shadow-lg shadow-indigo-500/20 transition flex items-center gap-2">
-                        <i class="fas fa-sync-alt"></i> Atualizar
-                     </button>
-                </div>
-            </header>
-
-            <main class="p-6 md:p-8 overflow-y-auto flex-1 bg-slate-50 dark:bg-slate-900">
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-between">
-                        <div>
-                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total de Notas</p>
-                            <h3 class="text-3xl font-bold text-slate-800 dark:text-white" id="statTotal">0</h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-500 flex items-center justify-center text-xl"><i class="fas fa-layer-group"></i></div>
-                    </div>
-
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-between">
-                        <div>
-                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Com Retorno Anexado</p>
-                            <h3 class="text-3xl font-bold text-emerald-500" id="statWithReturn">0</h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 flex items-center justify-center text-xl"><i class="fas fa-paperclip"></i></div>
-                    </div>
-
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-between">
-                        <div>
-                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Sem PDF Original</p>
-                            <h3 class="text-3xl font-bold text-slate-400" id="statNoPdf">0</h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-400 flex items-center justify-center text-xl"><i class="fas fa-file-excel"></i></div>
-                    </div>
-                </div>
-
-                <div class="mb-6 relative max-w-md">
-                    <input type="text" id="searchInput" placeholder="Pesquisar por Razão, Nº Nota..." oninput="aplicarFiltroPesquisa()" class="modern-input pl-10 h-12 shadow-sm">
-                    <i class="fas fa-search absolute left-3.5 top-4 text-slate-400"></i>
-                </div>
-
-                <div class="overflow-x-auto pb-10">
-                    <table id="nfTable" class="w-full text-left custom-table">
-                        <thead>
-                            <tr>
-                                <th class="py-3">Data/Hora</th>
-                                <th>Razão Social</th>
-                                <th>NF Venda</th>
-                                <th>NF Remessa</th>
-                                <th>NF Cobertura</th>
-                                <th class="text-center">PDF Original</th>
-                                <th class="text-center">PDF Retorno</th> 
-                            </tr>
-                        </thead>
-                        <tbody class="text-sm text-slate-600 dark:text-slate-300">
-                            <tr><td colspan="7" class="text-center py-12 text-slate-400 italic">Aguardando atualização...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div id="paginationBar" class="flex items-center justify-between mt-2 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
-                    <div class="flex gap-2">
-                         <button onclick="changePage(-1)" id="prevBtn" disabled class="px-4 py-2 rounded-lg border dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 text-sm font-medium transition dark:text-slate-300">Anterior</button>
-                         <button onclick="changePage(1)" id="nextBtn" disabled class="px-4 py-2 rounded-lg border dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 text-sm font-medium transition dark:text-slate-300">Próximo</button>
-                    </div>
-                    <span id="showingInfo" class="text-xs font-bold text-slate-400 uppercase tracking-wide"></span>
-                    <select id="rowsPerPage" onchange="changeRowsPerPage()" class="border-none bg-slate-50 dark:bg-slate-900 rounded-lg p-2 text-sm font-bold text-slate-600 dark:text-slate-300 focus:ring-0 cursor-pointer outline-none">
-                        <option value="10">10 / pág</option>
-                        <option value="30">30 / pág</option>
-                        <option value="50">50 / pág</option>
-                    </select>
-                </div>
-            </main>
-        </div>
+      <button id="loginBtn">
+        <span class="btn-text">Entrar</span>
+        <span class="btn-loader" style="display:none;">
+          <span></span><span></span><span></span>
+        </span>
+      </button>
+      <p class="error" id="error-msg"></p>
     </div>
 
-    <div id="feedback" class="fixed top-6 right-6 bg-slate-800/90 dark:bg-slate-700/90 backdrop-blur text-white px-6 py-4 rounded-xl shadow-2xl hidden z-[100] flex items-center gap-3 transform transition-all translate-y-0 border border-slate-700">
-        <i class="fas fa-check-circle text-emerald-400 text-xl"></i> 
+    <footer id="login-footer">Desenvolvido por João Lucas - Aprendiz - Supply Chain</footer>
+  </div>
+
+  <div id="mainApp" class="hidden flex h-screen overflow-hidden fade-in relative z-0">
+      
+    <aside class="w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 hidden md:flex flex-col shrink-0 z-20 shadow-xl transition-colors">
+      <div class="p-6 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg">
+          <i class="fas fa-building text-lg"></i>
+        </div>
         <div>
-            <h4 class="font-bold text-sm">Sucesso</h4>
-            <span id="feedbackText" class="text-xs text-slate-300">Operação realizada!</span>
+          <h1 class="text-xl font-bold text-slate-800 dark:text-white tracking-tight leading-tight" id="sidebarTitle">Fábrica</h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Gestão de Retornos</p>
         </div>
+      </div>
+      
+      <nav class="flex-1 px-4 space-y-2 mt-4">
+        <button class="w-full text-left py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md transition-all flex items-center gap-3 text-sm font-bold">
+          <i class="fas fa-list"></i> Minhas Notas
+        </button>
+      </nav>
+
+      <div class="p-4 border-t border-slate-100 dark:border-slate-700 space-y-2">
+         <button onclick="realizarLogout()" class="w-full py-2 px-4 rounded-lg border border-red-200 dark:border-red-900/50 text-red-500 dark:text-red-400 text-xs font-bold transition flex items-center justify-center gap-2 hover:bg-red-50 dark:hover:bg-red-900/20">
+          <i class="fas fa-sign-out-alt"></i> Sair
+        </button>
+
+        <button onclick="toggleDarkMode()" class="w-full py-2 px-4 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs font-bold transition flex items-center justify-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-600">
+          <i class="fas fa-moon dark:hidden"></i><i class="fas fa-sun hidden dark:inline text-amber-400"></i> <span id="themeText">Modo Escuro</span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-screen overflow-hidden relative">
+      <header class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-slate-200/60 dark:border-slate-700 p-6 flex flex-wrap gap-4 items-center justify-between z-10 sticky top-0">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-800 dark:text-white" id="headerTitle">Controle de Notas</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400">Gerencie uploads e visualizações</p>
+        </div>
+        <div class="flex gap-2">
+           <button onclick="carregarNFs()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-bold shadow-lg shadow-indigo-500/20 transition flex items-center gap-2">
+             <i class="fas fa-sync-alt"></i> Atualizar
+           </button>
+        </div>
+      </header>
+
+      <main class="p-6 md:p-8 overflow-y-auto flex-1 bg-slate-50 dark:bg-slate-900">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-between">
+            <div>
+              <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total de Notas</p>
+              <h3 class="text-3xl font-bold text-slate-800 dark:text-white" id="statTotal">0</h3>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-500 flex items-center justify-center text-xl"><i class="fas fa-layer-group"></i></div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-between">
+            <div>
+              <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Com Retorno Anexado</p>
+              <h3 class="text-3xl font-bold text-emerald-500" id="statWithReturn">0</h3>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 flex items-center justify-center text-xl"><i class="fas fa-paperclip"></i></div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-between">
+            <div>
+              <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Sem PDF Original</p>
+              <h3 class="text-3xl font-bold text-slate-400" id="statNoPdf">0</h3>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-400 flex items-center justify-center text-xl"><i class="fas fa-file-excel"></i></div>
+          </div>
+        </div>
+
+        <div class="mb-6 relative max-w-md">
+          <input type="text" id="searchInput" placeholder="Pesquisar por Razão, Nº Nota..." oninput="aplicarFiltroPesquisa()" class="modern-input pl-10 h-12 shadow-sm">
+          <i class="fas fa-search absolute left-3.5 top-4 text-slate-400"></i>
+        </div>
+
+        <div class="overflow-x-auto pb-10">
+          <table id="nfTable" class="w-full text-left custom-table">
+            <thead>
+              <tr>
+                <th class="py-3">Data/Hora</th>
+                <th>Razão Social</th>
+                <th>NF Venda</th>
+                <th>NF Remessa</th>
+                <th>NF Cobertura</th>
+                <th class="text-center">PDF Original</th>
+                <th class="text-center">PDFs de Retorno (Slots)</th> 
+              </tr>
+            </thead>
+            <tbody class="text-sm text-slate-600 dark:text-slate-300">
+              <tr><td colspan="7" class="text-center py-12 text-slate-400 italic">Aguardando atualização...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="paginationBar" class="flex items-center justify-between mt-2 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+          <div class="flex gap-2">
+             <button onclick="changePage(-1)" id="prevBtn" disabled class="px-4 py-2 rounded-lg border dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 text-sm font-medium transition dark:text-slate-300">Anterior</button>
+             <button onclick="changePage(1)" id="nextBtn" disabled class="px-4 py-2 rounded-lg border dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 text-sm font-medium transition dark:text-slate-300">Próximo</button>
+          </div>
+          <span id="showingInfo" class="text-xs font-bold text-slate-400 uppercase tracking-wide"></span>
+          <select id="rowsPerPage" onchange="changeRowsPerPage()" class="border-none bg-slate-50 dark:bg-slate-900 rounded-lg p-2 text-sm font-bold text-slate-600 dark:text-slate-300 focus:ring-0 cursor-pointer outline-none">
+            <option value="10">10 / pág</option>
+            <option value="30">30 / pág</option>
+            <option value="50">50 / pág</option>
+          </select>
+        </div>
+      </main>
     </div>
+  </div>
 
-    <script>
-        /* === CONFIGURAÇÕES E CREDENCIAIS === */
-        const webAppURL = "https://script.google.com/macros/s/AKfycbz7eJXOom8HbTnnN4n3ZajjtgpHsDHBYtlbzXpTV5hY9vT-uYOeQecD5ggLOOUBoK9K/exec";
-        
-        // Definição dos usuários e suas respectivas fábricas (User: {pass, factory})
-        // ATENÇÃO: Em sistemas profissionais, isso deve ser validado no Backend.
-        // Como é uma ferramenta interna simples, faremos aqui.
-        const ACESSOS = {
-            'una':       { pass: '48291', fabrica: 'UNA' },
-            'icnb':      { pass: '73056', fabrica: 'ICNB' },
-            'mundial':      { pass: '94625', fabrica: 'MUNDIAL' },
-            'naturelle': { pass: '19582', fabrica: 'NATURELLE' },
-            'aercamp':   { pass: '60234', fabrica: 'AERCAMP' },
-            'decor':     { pass: '91745', fabrica: 'DECOR' },
-            'admin':     { pass: 'admin', fabrica: 'TODAS' } // Opcional: superusuário
-        };
+  <div id="feedback" class="fixed top-6 right-6 bg-slate-800/90 dark:bg-slate-700/90 backdrop-blur text-white px-6 py-4 rounded-xl shadow-2xl hidden z-[100] flex items-center gap-3 transform transition-all translate-y-0 border border-slate-700">
+    <i class="fas fa-check-circle text-emerald-400 text-xl"></i> 
+    <div>
+      <h4 class="font-bold text-sm">Sucesso</h4>
+      <span id="feedbackText" class="text-xs text-slate-300">Operação realizada!</span>
+    </div>
+  </div>
 
-        let sessaoAtual = null; // Guardará { user, fabrica }
-        let allData = [], workingData = [];
-        let currentPage = 1, rowsPerPage = 10;
+  <script>
+    /* === CONFIGURAÇÕES GERAIS === */
+    const dataAppURL = "https://script.google.com/macros/s/AKfycbyRxnJrySs3VfLItnP3Iazhnm5yorMdRpjPsd1W2am13fg42gmLXW0NqxJhO1aULdSOSg/exec";
+    
+    // Lista local de Fábricas para associar ao login
+    const ACESSOS_LOCAIS = {
+     'una':       { fabrica: 'UNA' },
+        'icnb':      { fabrica: 'ICNB' },
+        'naturelle': { fabrica: 'NATURELLE' },
+        'aercamp':   { fabrica: 'AERCAMP' },
+        'decor':     { fabrica: 'DECOR' },
+        'mundial':   { fabrica: 'MUNDIAL' }, // <--- LINHA ADICIONADA
+        'admin':     { fabrica: 'TODAS' }
+    };
 
-        /* === INICIALIZAÇÃO E TEMA === */
-        function initTheme() {
-            const saved = localStorage.getItem('theme');
-            if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-                document.getElementById('themeText').innerText = "Modo Claro";
-            }
-        }
-        function toggleDarkMode() {
-            document.documentElement.classList.toggle('dark');
-            const isDark = document.documentElement.classList.contains('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            
-            // Atualiza texto se o elemento existir (pode estar na tela de login ou app)
-            const themeTxt = document.getElementById('themeText');
-            if(themeTxt) themeTxt.innerText = isDark ? "Modo Claro" : "Modo Escuro";
-        }
+    let sessaoAtual = null;
+    let allData = [], workingData = [];
+    let currentPage = 1, rowsPerPage = 10;
 
-        /* === SISTEMA DE LOGIN === */
-        function realizarLogin(e) {
-            e.preventDefault();
-            const user = document.getElementById('loginUser').value.toLowerCase().trim();
-            const pass = document.getElementById('loginPass').value.trim();
-            const errorMsg = document.getElementById('loginError');
+    /* === SCRIPT VISUAL DO LOGIN (Ondas e Carrossel) === */
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    let waves=[]; const colors=['rgba(3,155,229,0.3)','rgba(41,182,246,0.25)','rgba(33,150,243,0.2)'];
+    for(let i=0;i<3;i++){waves.push({y:canvas.height/2+i*30,amplitude:50+i*10,wavelength:200+i*50,speed:0.015+i*0.005,phase:0,color:colors[i]});}
+    function drawWave(w){ctx.beginPath();for(let x=0;x<canvas.width;x+=1){ctx.lineTo(x,w.y+Math.sin((x/w.wavelength)+w.phase)*w.amplitude);}ctx.strokeStyle=w.color;ctx.lineWidth=2;ctx.stroke();}
+    function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);waves.forEach(w=>{w.phase+=w.speed;drawWave(w);});requestAnimationFrame(animate);}
+    animate();
+    window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight});
 
-            if (ACESSOS[user] && ACESSOS[user].pass === pass) {
-                // Sucesso
-                sessaoAtual = {
-                    user: user,
-                    fabrica: ACESSOS[user].fabrica
-                };
-                
-                // Configurar UI para a fábrica
-                document.getElementById('sidebarTitle').innerText = "Fábrica " + sessaoAtual.fabrica;
-                document.getElementById('headerTitle').innerText = "Controle - " + sessaoAtual.fabrica;
-                document.title = "Gestão " + sessaoAtual.fabrica;
+    const imgs=document.querySelectorAll('.banner-carousel img');let current=0;
+    setInterval(()=>{imgs[current].classList.remove('active');current=(current+1)%imgs.length;imgs[current].classList.add('active');},6000);
 
-                // Trocar telas
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('mainApp').classList.remove('hidden');
-                document.getElementById('mainApp').classList.add('flex');
+    // Toggle senha
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
+    togglePassword.addEventListener("click", ()=>{
+      const type = passwordInput.type === "password" ? "text" : "password";
+      passwordInput.type = type;
+      togglePassword.classList.toggle("open");
+      togglePassword.classList.toggle("closed");
+    });
 
-                // Carregar dados
-                carregarNFs();
-            } else {
-                // Erro
-                errorMsg.classList.remove('hidden');
-                document.getElementById('loginPass').value = '';
-                document.getElementById('loginPass').focus();
-            }
-        }
+    /* === LÓGICA DE LOGIN HÍBRIDA === */
+    // 1. Usa o visual e o endpoint do Código A para validar senha.
+    // 2. Se validado, usa o mapeamento do Código B para definir a fábrica e abrir o Dashboard.
+    function login() {
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value.trim();
+      const errorMsg = document.getElementById('error-msg');
+      const btn = document.getElementById('loginBtn');
 
-        function realizarLogout() {
-            sessaoAtual = null;
-            allData = [];
-            workingData = [];
-            
-            // Limpar campos
-            document.getElementById('loginUser').value = '';
-            document.getElementById('loginPass').value = '';
-            document.getElementById('loginError').classList.add('hidden');
+      // UI Loading
+      btn.querySelector('.btn-text').style.display = 'none';
+      btn.querySelector('.btn-loader').style.display = 'flex';
+      errorMsg.textContent = "";
 
-            // Trocar telas
-            document.getElementById('mainApp').classList.add('hidden');
-            document.getElementById('mainApp').classList.remove('flex');
-            document.getElementById('loginScreen').classList.remove('hidden');
-        }
+      // Verifica API do Código A
+      fetch(`https://script.google.com/macros/s/AKfycbwVlslb9UQbiYqpbI4Senjt3Ko_thR84eVWQgmMP3Kayn04jK3PITEcIyWlgiWHXo60/exec?user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`)
+        .then(response => response.text())
+        .then(url => {
+          btn.querySelector('.btn-text').style.display = 'inline-block';
+          btn.querySelector('.btn-loader').style.display = 'none';
+          url = url.trim();
 
-        /* === LÓGICA DE DADOS === */
-        async function carregarNFs() {
-            if(!sessaoAtual) return; // Segurança extra
+          // Se a API retornar qualquer coisa diferente de INVALID, a senha está certa.
+          if (url && url !== "INVALID") {
+             // Login Visual Aprovado. Agora verificamos o contexto da fábrica.
+             const userKey = user.toLowerCase();
+             let fabricaDestino = 'TODAS'; // Padrão se não achar no mapeamento
 
-            const tbody = document.querySelector('#nfTable tbody');
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center py-12"><div class="flex justify-center flex-col items-center"><i class="fas fa-spinner fa-spin text-indigo-500 text-3xl mb-3"></i><span class="text-slate-400">Buscando dados da '+ sessaoAtual.fabrica +'...</span></div></td></tr>';
-            
-            try {
-                const res = await fetch(webAppURL + '?action=get');
-                const rawData = await res.json();
-                
-                // === FILTRAGEM DINÂMICA ===
-                if (sessaoAtual.fabrica === 'TODAS') {
-                    allData = rawData; // Admin vê tudo
-                } else {
-                    // Filtra apenas a fábrica do usuário logado
-                    allData = rawData.filter(x => x.fabrica === sessaoAtual.fabrica);
-                }
-                
-                allData.sort((a,b) => new Date(b.dataHora||0) - new Date(a.dataHora||0));
-                
-                aplicarFiltroPesquisa();
-                mostrarFeedback('Dados atualizados!');
-            } catch (err) {
-                console.error(err);
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-red-500 py-8 font-bold">Erro de conexão ao carregar dados.</td></tr>';
-            }
-        }
+             if (ACESSOS_LOCAIS[userKey]) {
+                fabricaDestino = ACESSOS_LOCAIS[userKey].fabrica;
+             } else {
+                console.warn("Usuário logado mas sem mapeamento de fábrica. Definindo como TODAS ou avisar erro.");
+             }
 
-        function aplicarFiltroPesquisa() {
-            const termo = (document.getElementById('searchInput').value || '').toLowerCase().trim();
-            
-            workingData = allData.filter(r => {
-                const combined = (String(r.razao||'') + '|' + String(r.nfVenda||'') + '|' + String(r.nfRemessa||'')).toLowerCase();
-                return combined.includes(termo);
-            });
-            
-            updateStats();
-            currentPage = 1;
-            renderTabela();
-        }
+             // Iniciar Sessão
+             iniciarSessao(userKey, fabricaDestino);
 
-        function updateStats() {
-            const total = workingData.length;
-            const withReturn = workingData.filter(x => x.pdfRetorno && x.pdfRetorno.trim() !== "").length;
-            const noPdf = workingData.filter(x => !x.pdfLink || x.pdfLink.trim() === "").length;
-            
-            document.getElementById('statTotal').innerText = total;
-            document.getElementById('statWithReturn').innerText = withReturn;
-            document.getElementById('statNoPdf').innerText = noPdf;
-            
-            const statNoPdfEl = document.getElementById('statNoPdf');
-            if (noPdf > 0) {
-                statNoPdfEl.classList.remove('text-slate-400');
-                statNoPdfEl.classList.add('text-red-500');
-            } else {
-                statNoPdfEl.classList.remove('text-red-500');
-                statNoPdfEl.classList.add('text-slate-400');
-            }
-        }
-
-        function renderTabela() {
-            const tbody = document.querySelector('#nfTable tbody');
-            rowsPerPage = parseInt(document.getElementById('rowsPerPage').value, 10);
-            const totalItems = workingData.length;
-            const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
-            
-            if (currentPage > totalPages) currentPage = totalPages;
-            
-            const start = (currentPage - 1) * rowsPerPage;
-            const end = Math.min(totalItems, start + rowsPerPage);
-            const pageData = workingData.slice(start, end);
-            
-            tbody.innerHTML = '';
-
-            if (pageData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-12 text-slate-400">Nenhum registro encontrado para '+ sessaoAtual.fabrica +'.</td></tr>';
-                document.getElementById('showingInfo').innerText = '';
-                return;
-            }
-
-            pageData.forEach(r => {
-                
-                let htmlRetorno;
-                if(r.pdfRetorno) {
-                    htmlRetorno = `<a href="${r.pdfRetorno}" target="_blank" class="px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-xs font-bold border border-emerald-200 dark:border-emerald-800 transition flex items-center justify-center gap-2"><i class="fas fa-check"></i> Ver PDF</a>`;
-                } else {
-                    htmlRetorno = `
-                    <label class="cursor-pointer px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/50 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-300 text-xs font-bold border border-slate-200 dark:border-slate-600 transition flex items-center justify-center gap-2 group">
-                        <i class="fas fa-cloud-upload-alt group-hover:scale-110 transition-transform"></i> Enviar
-                        <input type="file" class="hidden" accept="application/pdf" onchange="enviarPdfRetorno('${r.id}', this)">
-                    </label>`;
-                }
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="px-4 py-4 text-slate-500 dark:text-slate-400 font-mono text-xs border-l-4 border-l-transparent hover:border-l-indigo-500 transition-all">${r.dataHora ? new Date(r.dataHora).toLocaleDateString() + ' ' + new Date(r.dataHora).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '-'}</td>
-                    <td class="px-4 py-4 font-bold text-slate-700 dark:text-slate-300 text-sm">${r.razao || ''}</td>
-                    <td class="px-4 py-4 font-mono text-xs text-slate-600 dark:text-slate-400">${r.nfVenda || ''}</td>
-                    <td class="px-4 py-4 font-mono text-xs text-slate-600 dark:text-slate-400">${r.nfRemessa || ''}</td>
-                    <td class="px-4 py-4 font-mono text-xs text-slate-600 dark:text-slate-400">${r.nfCobertura || ''}</td>
-                    
-                    <td class="px-4 py-4 text-center">
-                        ${r.pdfLink ? `<a href="${r.pdfLink}" target="_blank" class="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-500 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 inline-flex items-center justify-center transition" title="Abrir PDF Original"><i class="fas fa-file-pdf"></i></a>` : '<span class="text-slate-300">-</span>'}
-                    </td>
-                    
-                    <td class="px-4 py-4 text-center">
-                        <div class="flex justify-center">${htmlRetorno}</div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            updatePaginationUI(totalItems, totalPages, start + 1, end);
-        }
-
-        /* === UPLOAD DE PDF RETORNO === */
-        function enviarPdfRetorno(id, inputElement) {
-            const file = inputElement.files[0];
-            if (!file) return;
-
-            if (file.size > 5 * 1024 * 1024) {
-                alert('O arquivo é muito grande (Máx 5MB).');
-                return;
-            }
-
-            const parentLabel = inputElement.parentElement;
-            const originalContent = parentLabel.innerHTML;
-            parentLabel.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ...`;
-            parentLabel.classList.add('cursor-wait', 'opacity-75');
-
-            mostrarFeedback('Enviando PDF...');
-            
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = function(e) {
-                const base64Data = e.target.result.split(',')[1];
-                const payload = {
-                    action: 'uploadRetorno',
-                    id: id,
-                    fileName: 'RETORNO_' + file.name,
-                    mimeType: file.type,
-                    fileData: base64Data
-                };
-
-                fetch(webAppURL, { method: 'POST', body: JSON.stringify(payload) })
-                .then(res => res.json())
-                .then(data => {
-                    if(data.status === 'success'){
-                        mostrarFeedback('PDF salvo com sucesso!');
-                        carregarNFs();
-                    } else {
-                        alert('Erro ao salvar: ' + data.message);
-                        parentLabel.innerHTML = originalContent;
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    alert('Erro na conexão.');
-                    parentLabel.innerHTML = originalContent;
-                });
-            };
-        }
-
-        /* === PAGINAÇÃO E UTILITÁRIOS === */
-        function updatePaginationUI(totalItems, totalPages, start, end) {
-            document.getElementById('prevBtn').disabled = currentPage <= 1;
-            document.getElementById('nextBtn').disabled = currentPage >= totalPages;
-            document.getElementById('showingInfo').innerText = `Mostrando ${start}–${end} de ${totalItems}`;
-        }
-        function changePage(d) { currentPage += d; renderTabela(); }
-        function changeRowsPerPage() { currentPage = 1; renderTabela(); }
-        
-        function mostrarFeedback(msg) {
-            const f = document.getElementById('feedback');
-            document.getElementById('feedbackText').innerText = msg;
-            f.classList.remove('hidden', 'translate-y-[-20px]', 'opacity-0');
-            setTimeout(() => { f.classList.add('hidden', 'translate-y-[-20px]', 'opacity-0'); }, 3000);
-        }
-
-        // Inicializar
-        document.addEventListener('DOMContentLoaded', () => {
-            initTheme();
-            // NÃO chamamos carregarNFs() aqui. Só após o login.
+          } else {
+            errorMsg.textContent = "Usuário ou senha incorretos!";
+            // Resetar campo senha
+            document.getElementById('password').value = '';
+          }
+        })
+        .catch(err => {
+          btn.querySelector('.btn-text').style.display = 'inline-block';
+          btn.querySelector('.btn-loader').style.display = 'none';
+          console.log(err);
+          errorMsg.textContent = "Erro de conexão com o servidor de login.";
         });
-    </script>
+    }
+
+    // Ativa Enter para login
+    document.getElementById("username").addEventListener("keyup", function(e){if(e.key==="Enter"){login();}});
+    document.getElementById("password").addEventListener("keyup", function(e){if(e.key==="Enter"){login();}});
+    document.getElementById("loginBtn").addEventListener("click", login);
+
+    function iniciarSessao(user, fabrica) {
+        sessaoAtual = { user: user, fabrica: fabrica };
+        
+        // Esconde Login, Mostra Dashboard
+        document.getElementById('login-wrapper').style.display = 'none';
+        document.getElementById('mainApp').classList.remove('hidden');
+        document.getElementById('mainApp').classList.add('flex');
+        
+        // Configura Dashboard
+        document.getElementById('sidebarTitle').innerText = "Fábrica " + fabrica;
+        document.getElementById('headerTitle').innerText = "Controle - " + fabrica;
+        document.title = "Gestão " + fabrica;
+
+        // Carrega Dados
+        carregarNFs();
+    }
+
+    function realizarLogout() {
+        sessaoAtual = null;
+        allData = [];
+        workingData = [];
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        
+        document.getElementById('mainApp').classList.add('hidden');
+        document.getElementById('mainApp').classList.remove('flex');
+        document.getElementById('login-wrapper').style.display = 'flex';
+    }
+
+    /* === LÓGICA DO DASHBOARD (Preservada do Código B) === */
+    function initTheme() {
+        const saved = localStorage.getItem('theme');
+        if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            const themeTxt = document.getElementById('themeText');
+            if(themeTxt) themeTxt.innerText = "Modo Claro";
+        }
+    }
+    function toggleDarkMode() {
+        document.documentElement.classList.toggle('dark');
+        const isDark = document.documentElement.classList.contains('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        const themeTxt = document.getElementById('themeText');
+        if(themeTxt) themeTxt.innerText = isDark ? "Modo Claro" : "Modo Escuro";
+    }
+
+    async function carregarNFs() {
+        if(!sessaoAtual) return;
+        const tbody = document.querySelector('#nfTable tbody');
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-12"><div class="flex justify-center flex-col items-center"><i class="fas fa-spinner fa-spin text-indigo-500 text-3xl mb-3"></i><span class="text-slate-400">Buscando dados da '+ sessaoAtual.fabrica +'...</span></div></td></tr>';
+        
+        try {
+            const res = await fetch(dataAppURL + '?action=get');
+            const rawData = await res.json();
+            
+            if (sessaoAtual.fabrica === 'TODAS') {
+                allData = rawData;
+            } else {
+                allData = rawData.filter(x => x.fabrica === sessaoAtual.fabrica);
+            }
+            
+            allData.sort((a,b) => new Date(b.dataHora||0) - new Date(a.dataHora||0));
+            aplicarFiltroPesquisa();
+            mostrarFeedback('Dados atualizados!');
+        } catch (err) {
+            console.error(err);
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-red-500 py-8 font-bold">Erro de conexão ao carregar dados.</td></tr>';
+        }
+    }
+
+    function aplicarFiltroPesquisa() {
+        const termo = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+        workingData = allData.filter(r => {
+            const combined = (String(r.razao||'') + '|' + String(r.nfVenda||'') + '|' + String(r.nfRemessa||'')).toLowerCase();
+            return combined.includes(termo);
+        });
+        updateStats();
+        currentPage = 1;
+        renderTabela();
+    }
+
+    function updateStats() {
+        const total = workingData.length;
+        const withReturn = workingData.filter(x => (x.pdfRetorno && x.pdfRetorno.trim() !== "") || (x.pdfRetorno2 && x.pdfRetorno2.trim() !== "") || (x.pdfRetorno3 && x.pdfRetorno3.trim() !== "")).length;
+        const noPdf = workingData.filter(x => !x.pdfLink || x.pdfLink.trim() === "").length;
+        
+        document.getElementById('statTotal').innerText = total;
+        document.getElementById('statWithReturn').innerText = withReturn;
+        document.getElementById('statNoPdf').innerText = noPdf;
+        
+        const statNoPdfEl = document.getElementById('statNoPdf');
+        if (noPdf > 0) { statNoPdfEl.classList.remove('text-slate-400'); statNoPdfEl.classList.add('text-red-500'); }
+        else { statNoPdfEl.classList.remove('text-red-500'); statNoPdfEl.classList.add('text-slate-400'); }
+    }
+
+    function renderTabela() {
+        const tbody = document.querySelector('#nfTable tbody');
+        rowsPerPage = parseInt(document.getElementById('rowsPerPage').value, 10);
+        const totalItems = workingData.length;
+        const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = Math.min(totalItems, start + rowsPerPage);
+        const pageData = workingData.slice(start, end);
+        
+        tbody.innerHTML = '';
+        if (pageData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center py-12 text-slate-400">Nenhum registro encontrado.</td></tr>';
+            document.getElementById('showingInfo').innerText = '';
+            return;
+        }
+
+        pageData.forEach(r => {
+            let htmlRetorno = '<div class="flex gap-2 justify-center">';
+            for(let i=1; i<=3; i++) {
+                const prop = i === 1 ? 'pdfRetorno' : `pdfRetorno${i}`;
+                const link = r[prop];
+                if(link) {
+                     htmlRetorno += `<a href="${link}" target="_blank" class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800 transition flex items-center justify-center font-bold text-xs" title="Ver Retorno ${i}"><i class="fas fa-check"></i><span class="ml-0.5 text-[10px]">${i}</span></a>`;
+                } else {
+                     htmlRetorno += `<label class="cursor-pointer w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/50 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-300 border border-slate-200 dark:border-slate-600 transition flex items-center justify-center group" title="Enviar Retorno ${i}"><i class="fas fa-cloud-upload-alt group-hover:scale-110 transition-transform"></i><input type="file" class="hidden" accept="application/pdf" onchange="enviarPdfRetorno('${r.id}', this, ${i})"></label>`;
+                }
+            }
+            htmlRetorno += '</div>';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="px-4 py-4 text-slate-500 dark:text-slate-400 font-mono text-xs border-l-4 border-l-transparent hover:border-l-indigo-500 transition-all">${r.dataHora ? new Date(r.dataHora).toLocaleDateString() + ' ' + new Date(r.dataHora).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '-'}</td>
+                <td class="px-4 py-4 font-bold text-slate-700 dark:text-slate-300 text-sm">${r.razao || ''}</td>
+                <td class="px-4 py-4 font-mono text-xs text-slate-600 dark:text-slate-400">${r.nfVenda || ''}</td>
+                <td class="px-4 py-4 font-mono text-xs text-slate-600 dark:text-slate-400">${r.nfRemessa || ''}</td>
+                <td class="px-4 py-4 font-mono text-xs text-slate-600 dark:text-slate-400">${r.nfCobertura || ''}</td>
+                <td class="px-4 py-4 text-center">${r.pdfLink ? `<a href="${r.pdfLink}" target="_blank" class="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-500 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 inline-flex items-center justify-center transition" title="Abrir PDF Original"><i class="fas fa-file-pdf"></i></a>` : '<span class="text-slate-300">-</span>'}</td>
+                <td class="px-4 py-4 text-center">${htmlRetorno}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+        updatePaginationUI(totalItems, totalPages, start + 1, end);
+    }
+
+    function enviarPdfRetorno(id, inputElement, slot) {
+        const file = inputElement.files[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) { alert('O arquivo é muito grande (Máx 5MB).'); return; }
+        const parentLabel = inputElement.parentElement;
+        const originalContent = parentLabel.innerHTML;
+        parentLabel.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+        parentLabel.classList.add('cursor-wait', 'opacity-75');
+        mostrarFeedback(`Enviando Retorno ${slot}...`);
+        
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function(e) {
+            const base64Data = e.target.result.split(',')[1];
+            const payload = { action: 'uploadRetorno', id: id, slot: slot, fileName: `RETORNO_${slot}_` + file.name, mimeType: file.type, fileData: base64Data };
+            fetch(dataAppURL, { method: 'POST', body: JSON.stringify(payload) })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success'){ mostrarFeedback(`Retorno ${slot} salvo!`); carregarNFs(); } 
+                else { alert('Erro ao salvar: ' + data.message); parentLabel.innerHTML = originalContent; }
+            })
+            .catch(error => { console.error(error); alert('Erro na conexão.'); parentLabel.innerHTML = originalContent; });
+        };
+    }
+
+    function updatePaginationUI(totalItems, totalPages, start, end) {
+        document.getElementById('prevBtn').disabled = currentPage <= 1;
+        document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+        document.getElementById('showingInfo').innerText = `Mostrando ${start}–${end} de ${totalItems}`;
+    }
+    function changePage(d) { currentPage += d; renderTabela(); }
+    function changeRowsPerPage() { currentPage = 1; renderTabela(); }
+    function mostrarFeedback(msg) {
+        const f = document.getElementById('feedback');
+        document.getElementById('feedbackText').innerText = msg;
+        f.classList.remove('hidden', 'translate-y-[-20px]', 'opacity-0');
+        setTimeout(() => { f.classList.add('hidden', 'translate-y-[-20px]', 'opacity-0'); }, 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', initTheme);
+  </script>
 </body>
 </html>
